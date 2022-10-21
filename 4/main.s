@@ -222,7 +222,7 @@ main:
 	mov	rsi, rdx
 	mov	rdi, rax
 	
-	# Вызываем функцию Scan;
+	# Вызываем функцию Comp;
 	call	Comp
 	lea	rax, -40016[rbp]
 	mov	rdi, rax

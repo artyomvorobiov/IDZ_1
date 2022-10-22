@@ -39,23 +39,26 @@ Scan:
 	
 	mov	eax, DWORD PTR n[rip]
 	# сравниваем n с 10000;
-	cmp	eax, 10000 
-	
+	cmp	eax, 10000
 	jg	.L2
 	mov	eax, DWORD PTR n[rip]
-	# сравниваем n с 0;
+	# сравниваем c 0
 	test	eax, eax
-	
 	jns	.L3
 .L2:
+	# Выводим надпись : "Введите n в промежутке от 0 до 10000"
 	lea	rax, .LC1[rip]
 	mov	rdi, rax
 	mov	eax, 0
 	call	printf@PLT
+	
+	# переходим на выход из функции если не удовлетворяет условиям 
+	jmp	.L4
 .L3:
 	mov	DWORD PTR -4[rbp], 0
-	jmp	.L4
-.L5:
+	jmp	.L5
+.L6:
+	# ввод чисел в массив A;
 	mov	eax, DWORD PTR -4[rbp]
 	cdqe
 	lea	rdx, 0[0+rax*4]
@@ -63,18 +66,18 @@ Scan:
 	add	rax, rdx
 	mov	rsi, rax
 	lea	rax, .LC0[rip]
-	
-	# ввод чисел в массив A;
 	mov	rdi, rax
 	mov	eax, 0
 	call	__isoc99_scanf@PLT
 	add	DWORD PTR -4[rbp], 1
-.L4:
+.L5:
+	# сравниваем n с 0
 	mov	eax, DWORD PTR n[rip]
 	cmp	DWORD PTR -4[rbp], eax
-	jl	.L5
-	
+	jl	.L6
 	nop
+.L4:
+	# выход из функции Scan
 	nop
 	leave
 	ret
@@ -89,8 +92,8 @@ Comp:
 	mov	eax, DWORD PTR n[rip]
 	sub	eax, 1
 	mov	DWORD PTR -4[rbp], eax
-	jmp	.L7
-.L9:
+	jmp	.L8
+.L10:
 	mov	eax, DWORD PTR -4[rbp]
 	cdqe
 	lea	rdx, 0[0+rax*4]
@@ -100,9 +103,7 @@ Comp:
 	# сравнение а[i] и 0;
 	mov	eax, DWORD PTR [rax]
 	test	eax, eax
-	
-	jns	.L8
-	
+	jns	.L9
 	mov	eax, DWORD PTR -4[rbp]
 	cdqe
 	lea	rdx, 0[0+rax*4]
@@ -115,17 +116,14 @@ Comp:
 	add	rdx, rcx
 	mov	eax, DWORD PTR [rax]
 	mov	DWORD PTR [rdx], eax
-	
-	# x += 1;
 	mov	eax, DWORD PTR x[rip]
 	add	eax, 1
 	mov	DWORD PTR x[rip], eax
-	
-.L8:
+.L9:
 	sub	DWORD PTR -4[rbp], 1
-.L7:
+.L8:
 	cmp	DWORD PTR -4[rbp], 0
-	jns	.L9
+	jns	.L10
 	nop
 	nop
 	pop	rbp
@@ -152,8 +150,8 @@ Prin:
 	mov	eax, 0
 	call	printf@PLT
 	mov	DWORD PTR -4[rbp], 0
-	jmp	.L11
-.L12:
+	jmp	.L12
+.L13:
 	mov	eax, DWORD PTR -4[rbp]
 	cdqe
 	lea	rdx, 0[0+rax*4]
@@ -168,10 +166,10 @@ Prin:
 	mov	eax, 0
 	call	printf@PLT
 	add	DWORD PTR -4[rbp], 1
-.L11:
+.L12:
 	mov	eax, DWORD PTR x[rip]
 	cmp	DWORD PTR -4[rbp], eax
-	jl	.L12
+	jl	.L13
 	nop
 	nop
 	leave
@@ -206,17 +204,20 @@ main:
 	# setlocate для пенчатанья текста на русском языке; 
 	call	setlocale@PLT
 	lea	rax, .LC5[rip]
-	
-	# выводим текст "Введите размер массива А, затем сам массив:": 
 	mov	rdi, rax
 	mov	eax, 0
 	call	printf@PLT
-
 	lea	rax, -80016[rbp]
 	mov	rdi, rax
+	
 	# Вызываем функцию Scan;
 	call	Scan
-	
+	mov	eax, DWORD PTR n[rip]
+	test	eax, eax
+	js	.L15
+	mov	eax, DWORD PTR n[rip]
+	cmp	eax, 10000
+	jg	.L15
 	lea	rdx, -40016[rbp]
 	lea	rax, -80016[rbp]
 	mov	rsi, rdx
@@ -226,13 +227,16 @@ main:
 	call	Comp
 	lea	rax, -40016[rbp]
 	mov	rdi, rax
+	
+	# Вызываем функцию Prin;
 	call	Prin
+.L15:
 	mov	eax, 0
 	mov	rdx, QWORD PTR -8[rbp]
 	sub	rdx, QWORD PTR fs:40
-	je	.L15
+	je	.L17
 	call	__stack_chk_fail@PLT
-.L15:
+.L17:
 	leave
 	ret
 	.size	main, .-main

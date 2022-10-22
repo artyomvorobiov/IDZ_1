@@ -6,11 +6,12 @@ int x = 0;
 
 void Scan(int *a) {
     scanf("%d", &n);
-    if (n > 10000 || n < 0){
+    if (n > 10000 || n < 0) {
         printf("Введите n в промежутке от 0 до 10000");
-    }
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &a[i]);
+    } else {
+        for (int i = 0; i < n; i++) {
+            scanf("%d", &a[i]);
+        }
     }
 }
 
@@ -18,16 +19,16 @@ void Comp(int *a, int *b) {
     int y = x;
     for (int i = n - 1; i >= 0; i--) {
         if (a[i] < 0) {
-            b[x] = a[i];
+            b[y] = a[i];
             y += 1;
         }
     }
     x = y;
 }
 
-void Prin(int *b){
+void Prin(int *b) {
     printf("Получившийся массив B: ");
-    for (int i = 0; i < x; i++){
+    for (int i = 0; i < x; i++) {
         printf("%d ", b[i]);
     }
 }
@@ -38,7 +39,9 @@ int main() {
     int B[10000];
     printf("Введите размер массива А, затем сам массив:");
     Scan(A);
-    Comp(A, B);
-    Prin(B);
+    if (n >= 0 && n <= 10000) {
+        Comp(A, B);
+        Prin(B);
+    }
     return 0;
 }

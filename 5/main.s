@@ -24,10 +24,12 @@ x:
 	.globl	Scan
 	.type	Scan, @function
 Scan:
+	# выравниывание 
 	push	rbp
 	mov	rbp, rsp
 	sub	rsp, 32
-	mov	QWORD PTR -24[rbp], rdi
+	
+	mov	QWORD PTR -24[rbp], rdi # в rdi адрес a[0]
 	lea	rax, n[rip]
 	
 	# ввод числа n;
@@ -87,8 +89,8 @@ Scan:
 Comp:
 	push	rbp
 	mov	rbp, rsp
-	mov	QWORD PTR -24[rbp], rdi
-	mov	QWORD PTR -32[rbp], rsi
+	mov	QWORD PTR -24[rbp], rdi # в rdi адрес a[0]
+	mov	QWORD PTR -32[rbp], rsi # в rsi адрес b[0]
 	mov	eax, DWORD PTR x[rip]
 	mov	DWORD PTR -8[rbp], eax
 	mov	eax, DWORD PTR n[rip]
@@ -146,7 +148,7 @@ Prin:
 	push	rbp
 	mov	rbp, rsp
 	sub	rsp, 32
-	mov	QWORD PTR -24[rbp], rdi
+	mov	QWORD PTR -24[rbp], rdi # в rdi адрес b[0]
 	lea	rax, .LC2[rip]
 	
 	# выводим текст;
@@ -211,24 +213,26 @@ main:
 	mov	eax, 0
 	# выводим текст "Введите размер массива А, затем сам массив:"
 	call	printf@PLT
-	lea	rax, -80016[rbp]
-	mov	rdi, rax
+	lea	rax, -80016[rbp] # в rax - адрес a[0];
+	mov	rdi, rax # в rdi тоже
 	# Вызываем функцию Scan;
 	call	Scan
 	mov	eax, DWORD PTR n[rip]
+	# сравниваем n c 0;
 	test	eax, eax
 	js	.L15
 	mov	eax, DWORD PTR n[rip]
+	# сравниваем n c 10000;
 	cmp	eax, 10000
 	jg	.L15
-	lea	rdx, -40016[rbp]
-	lea	rax, -80016[rbp]
-	mov	rsi, rdx
-	mov	rdi, rax
+	lea	rdx, -40016[rbp] # в rdx - адрес b[0];
+	lea	rax, -80016[rbp] # в rax - адрес a[0];
+	mov	rsi, rdx # в rsi - адрес b[0];
+	mov	rdi, rax # в rdi - адрес a[0];
 	# Вызываем функцию Comp;
 	call	Comp
-	lea	rax, -40016[rbp]
-	mov	rdi, rax
+	lea	rax, -40016[rbp] # в rax - адрес b[0];
+	mov	rdi, rax # в rdi - адрес b[0];
 	# Вызываем функцию Prin;
 	call	Prin
 .L15:
